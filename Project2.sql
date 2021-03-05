@@ -9,6 +9,7 @@
 
 ------------------------- create database --
 
+-- use the master database
 USE master;
 go
 
@@ -19,6 +20,8 @@ go
 --Create the database
 CREATE DATABASE disk_inventoryJM;
 go
+
+-- switch to newly created disk_inventoryJM database
 USE disk_inventoryJM;
 go
 
@@ -45,7 +48,7 @@ go
 
 --------------------------- create tables --
 
---create look-up tables
+--create look-up tables artistType, diskType, gerne, status
 
 CREATE TABLE artistType
 	(
