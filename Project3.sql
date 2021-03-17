@@ -429,3 +429,61 @@ WHERE borrowerID = 21;
 SELECT *
 FROM diskHasBorrower
 WHERE returnedDate IS NULL;
+
+
+--Project 4
+--3. Show the disks in your database and any associated Individual artists only.
+SELECT diskName, releaseDate, artistFName, artistLName
+FROM disk d
+	JOIN diskHasArtist dha ON d.diskID = dha.diskID
+	JOIN artist a ON a.artistID = dha.artistID
+ORDER BY diskName
+;
+GO
+
+--4. Create a view called View_Individual_Artist that shows the artists’ names and not group names. Include the artist id in the view definition but do not display the id in your output.
+
+--Drop VIEW if it exists
+DROP VIEW IF EXISTS View_Individual_artist;
+GO
+
+--Create the view table View_Individual_Artist
+CREATE VIEW View_Individual_Artist AS
+SELECT artistFName, artistLName
+FROM artist a
+	JOIN artistType atp ON atp.artistTypeCode = a.artistTypeCode
+WHERE atp.artistTypeCode <> 2
+;
+GO
+
+--Verify correct information from create view
+SELECT * FROM View_Individual_Artist
+ORDER BY artistLName
+;
+GO
+
+
+--5. Show the disks in your database and any associated Group artists only.
+SELECT diskName AS 'Disk Name', releaseDate AS 'Released Date', artistLName AS 'Group Name'
+FROM disk d
+	JOIN diskHasArtist dha ON d.diskID = dha.diskID
+	JOIN artist a ON a.artistID = dha.artistID
+	JOIN artistType aty ON aty.artistTypeCode = a.artistTypeCode
+WHERE aty.artistTypeCode = 2
+ORDER BY diskName
+;
+GO
+
+
+--6. Re-write the previous query using the View_Individual_Artist view. Do not redefine the view. Use ‘NOT EXISTS’ or ‘NOT IN’ as the only restriction in the WHERE clause. The output matches the output from the previous query.
+
+
+--7. Show the borrowed disks and who borrowed them.
+
+
+--8. Show the number of times a disk has been borrowed.
+
+
+--9. Show the disks outstanding or on-loan and who has each disk.
+
+
