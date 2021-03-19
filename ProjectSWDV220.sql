@@ -445,7 +445,7 @@ ORDER BY diskName
 ;
 GO
 
---4. Create a view called View_Individual_Artist that shows the artists’ names and not group names. Include the artist id in the view definition but do not display the id in your output.
+--4. Create a view called View_Individual_Artist that shows the artistsÂ’ names and not group names. Include the artist id in the view definition but do not display the id in your output.
 
 --Drop VIEW if it exists
 DROP VIEW IF EXISTS View_Individual_artist;
@@ -480,7 +480,7 @@ ORDER BY diskName
 GO
 
 
---6. Re-write the previous query using the View_Individual_Artist view. Do not redefine the view. Use ‘NOT EXISTS’ or ‘NOT IN’ as the only restriction in the WHERE clause. The output matches the output from the previous query.
+--6. Re-write the previous query using the View_Individual_Artist view. Do not redefine the view. Use Â‘NOT EXISTSÂ’ or Â‘NOT INÂ’ as the only restriction in the WHERE clause. The output matches the output from the previous query.
 SELECT diskName AS 'Disk Name', CONVERT(VARCHAR, releaseDate, 101) AS 'Released Date', artistLName AS 'Group Name'
 FROM disk d
 	JOIN diskHasArtist dha ON d.diskID = dha.diskID
