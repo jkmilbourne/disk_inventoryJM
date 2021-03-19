@@ -6,6 +6,7 @@
 **	Date		Programmer			Description
 **	03/05/21	Joshua Milbourne	Created Database and user for disk_inventoryJM
 **  03/12/21	Joshua Milbourne	Created all SQL to insert data into all tables
+**  03/19/21	Joshua Milbourne	Added Reports for Project 4
 ********************************************************************************************/
 
 ------------------------- create database --
@@ -283,45 +284,45 @@ VALUES('Orlando', NULL, 'Bloom', '123-456-7890')
 
 --Insert all information into disk table
 INSERT INTO disk(diskName, releaseDate, statusCode, genreCode, diskTypeID)
-VALUES('Tower Of Power', '2001', 1, 1, 1)
+VALUES('Tower Of Power', '7/17/2001', 1, 1, 1)
 INSERT INTO disk(diskName, releaseDate, statusCode, genreCode, diskTypeID)
-VALUES('Revolver', '1966', 1, 1, 1)
+VALUES('Revolver', '8/5/1966', 1, 1, 1)
 INSERT INTO disk(diskName, releaseDate, statusCode, genreCode, diskTypeID)
-VALUES('Sunday in the Park with George', '2017', 2, 3, 1)
+VALUES('Sunday in the Park with George', '12/8/2017', 2, 3, 1)
 INSERT INTO disk(diskName, releaseDate, statusCode, genreCode, diskTypeID)
-VALUES('River of Dreams', '1993', 1, 1, 1)
+VALUES('River of Dreams', '8/10/1993', 1, 1, 1)
 INSERT INTO disk(diskName, releaseDate, statusCode, genreCode, diskTypeID)
-VALUES('25', '1992', 1, 4, 1)
+VALUES('25', '11/24/1992', 1, 4, 1)
 INSERT INTO disk(diskName, releaseDate, statusCode, genreCode, diskTypeID)
-VALUES('Aspects of Love', '1989', 1, 3, 1)
+VALUES('Aspects of Love', '2/14/1989', 1, 3, 1)
 INSERT INTO disk(diskName, releaseDate, statusCode, genreCode, diskTypeID)
-VALUES('With A Song In My Heart', '1963', 2, 5, 1)
+VALUES('With A Song In My Heart', '12/28/1963', 2, 5, 1)
 INSERT INTO disk(diskName, releaseDate, statusCode, genreCode, diskTypeID)
-VALUES('Tommy', '1969', 2, 1, 1)
+VALUES('Tommy', '5/17/1969', 2, 1, 1)
 INSERT INTO disk(diskName, releaseDate, statusCode, genreCode, diskTypeID)
-VALUES('Mozart - Great Recordings', '2020', 2, 2, 1)
+VALUES('Mozart - Great Recordings', '6/1/2020', 2, 2, 1)
 INSERT INTO disk(diskName, releaseDate, statusCode, genreCode, diskTypeID)
-VALUES('Carousel(1993 London Cast Recording)', '1993', 2, 3, 1)
+VALUES('Carousel(1993 London Cast Recording)', '10/15/1993', 2, 3, 1)
 INSERT INTO disk(diskName, releaseDate, statusCode, genreCode, diskTypeID)
-VALUES('Pet Sounds', '1966', 2, 1, 1)
+VALUES('Pet Sounds', '5/16/1966', 2, 1, 1)
 INSERT INTO disk(diskName, releaseDate, statusCode, genreCode, diskTypeID)
-VALUES('The Hits 1', '1993', 2, 7, 1)
+VALUES('The Hits 1', '9/10/1993', 2, 7, 1)
 INSERT INTO disk(diskName, releaseDate, statusCode, genreCode, diskTypeID)
-VALUES('Flood', '1990', 2, 8, 1)
+VALUES('Flood', '1/15/1990', 2, 8, 1)
 INSERT INTO disk(diskName, releaseDate, statusCode, genreCode, diskTypeID)
-VALUES('Rocks', '1976', 2, 1, 1)
+VALUES('Rocks', '5/14/1976', 2, 1, 1)
 INSERT INTO disk(diskName, releaseDate, statusCode, genreCode, diskTypeID)
-VALUES('Evolution', '1979', 2, 1, 1)
+VALUES('Evolution', '3/23/1979', 2, 1, 1)
 INSERT INTO disk(diskName, releaseDate, statusCode, genreCode, diskTypeID)
-VALUES('A Little Night Music', '2010', 2, 3, 1)
+VALUES('A Little Night Music', '4/6/2010', 2, 3, 1)
 INSERT INTO disk(diskName, releaseDate, statusCode, genreCode, diskTypeID)
-VALUES('Evita', '1979', 2, 3, 1)
+VALUES('Evita', '9/25/1979', 2, 3, 1)
 INSERT INTO disk(diskName, releaseDate, statusCode, genreCode, diskTypeID)
-VALUES('Today!', '1965', 1, 1, 1)
+VALUES('Today!', '3/8/1965', 1, 1, 1)
 INSERT INTO disk(diskName, releaseDate, statusCode, genreCode, diskTypeID)
-VALUES('Movin Out', '2002', 2, 1, 1)
+VALUES('Movin Out', '11/1/1977', 2, 1, 1)
 INSERT INTO disk(diskName, releaseDate, statusCode, genreCode, diskTypeID)
-VALUES('They Might Be Giants', '1986', 2, 8, 1)
+VALUES('They Might Be Giants', '11/4/1986', 2, 8, 1)
 ;
 
 ----------------------------------------------Inserts into diskHasBorrower and DiskHasArtist tables
@@ -426,8 +427,10 @@ WHERE borrowerID = 21;
 
 --Create a query to list the disks that are on loan and have not been returned
 --SELECT query for all columns from diskHasBorrower table where the retunedDate equals NULL
-SELECT *
-FROM diskHasBorrower
+SELECT fname AS 'First', lname AS 'Last', diskName AS 'Disk Name', CONVERT(VARCHAR, borrowedDate, 101) AS 'Borrowed Date', CONVERT(VARCHAR, dueDate, 101) AS 'Due Date', CONVERT(VARCHAR, returnedDate, 101) AS 'Returned Date'
+FROM diskHasBorrower dhb
+	JOIN disk d ON d.diskID = dhb.diskID
+	JOIN borrower b ON b.borrowerID = dhb.borrowerID
 WHERE returnedDate IS NULL;
 
 
@@ -437,6 +440,7 @@ SELECT diskName, releaseDate, artistFName, artistLName
 FROM disk d
 	JOIN diskHasArtist dha ON d.diskID = dha.diskID
 	JOIN artist a ON a.artistID = dha.artistID
+WHERE artistTypeCode = 1
 ORDER BY diskName
 ;
 GO
@@ -449,7 +453,7 @@ GO
 
 --Create the view table View_Individual_Artist
 CREATE VIEW View_Individual_Artist AS
-SELECT artistFName, artistLName
+SELECT artistID, artistFName, artistLName
 FROM artist a
 	JOIN artistType atp ON atp.artistTypeCode = a.artistTypeCode
 WHERE atp.artistTypeCode <> 2
@@ -457,14 +461,15 @@ WHERE atp.artistTypeCode <> 2
 GO
 
 --Verify correct information from create view
-SELECT * FROM View_Individual_Artist
+SELECT artistFName AS 'First', artistLName AS 'Last'
+FROM View_Individual_Artist
 ORDER BY artistLName
 ;
 GO
 
 
 --5. Show the disks in your database and any associated Group artists only.
-SELECT diskName AS 'Disk Name', releaseDate AS 'Released Date', artistLName AS 'Group Name'
+SELECT diskName AS 'Disk Name', CONVERT(VARCHAR, releaseDate, 101) AS 'Released Date', artistLName AS 'Group Name'
 FROM disk d
 	JOIN diskHasArtist dha ON d.diskID = dha.diskID
 	JOIN artist a ON a.artistID = dha.artistID
@@ -476,14 +481,40 @@ GO
 
 
 --6. Re-write the previous query using the View_Individual_Artist view. Do not redefine the view. Use ‘NOT EXISTS’ or ‘NOT IN’ as the only restriction in the WHERE clause. The output matches the output from the previous query.
-
+SELECT diskName AS 'Disk Name', CONVERT(VARCHAR, releaseDate, 101) AS 'Released Date', artistLName AS 'Group Name'
+FROM disk d
+	JOIN diskHasArtist dha ON d.diskID = dha.diskID
+	JOIN artist a ON a.artistID = dha.artistID
+	JOIN artistType aty ON aty.artistTypeCode = a.artistTypeCode
+WHERE a.artistID NOT IN 
+	(SELECT artistID FROM View_Individual_Artist)
+ORDER BY diskName
+;
+GO 
 
 --7. Show the borrowed disks and who borrowed them.
-
+SELECT fname AS 'First', lname AS 'Last', diskName AS 'Disk Name', CONVERT(VARCHAR, borrowedDate, 101) AS 'Borrowed Date', CONVERT(VARCHAR, returnedDate, 101) AS 'Returned Date' 
+FROM borrower b
+	JOIN diskHasBorrower dhb ON dhb.borrowerID = b.borrowerID
+	JOIN disk d ON d.diskID = dhb.diskID
+ORDER BY 3, 2
+;
 
 --8. Show the number of times a disk has been borrowed.
+SELECT d.diskID AS 'Disk ID', diskName AS 'Disk Name', COUNT(*) AS 'Times Borrowed'
+FROM disk d
+	JOIN diskHasBorrower dhb ON d.diskID = dhb.diskID
+GROUP BY d.diskID, diskName
+ORDER BY 1
+;
 
 
 --9. Show the disks outstanding or on-loan and who has each disk.
-
+SELECT diskName AS 'Disk Name', CONVERT(VARCHAR, borrowedDate, 101) AS 'Borrowed', CONVERT(VARCHAR, returnedDate, 101) AS 'Returned', lname AS 'Last Name'
+FROM disk d
+	JOIN diskHasBorrower dhb ON dhb.diskID = d.diskID
+	JOIN borrower b ON dhb.borrowerID = b.borrowerID
+WHERE returnedDate IS NULL
+ORDER BY diskName
+;
 
