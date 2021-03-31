@@ -1,4 +1,4 @@
---Project 2
+--Project 2 through 5
 --SWDV 220
 --Joshua Milbourne
 
@@ -7,6 +7,7 @@
 **	03/05/21	Joshua Milbourne	Created Database and user for disk_inventoryJM
 **  03/12/21	Joshua Milbourne	Created all SQL to insert data into all tables
 **  03/19/21	Joshua Milbourne	Added Reports for Project 4
+**  03/31/21	Joshua Milbourne	Create Insert, Update, and Delete stored procedures for the disk, artist, borrower tables
 ********************************************************************************************/
 
 ------------------------- create database --
@@ -518,3 +519,281 @@ WHERE returnedDate IS NULL
 ORDER BY diskName
 ;
 
+
+-------------------------------------------------------- Project 5------------------------------------------
+
+------------------------------------------------------------------
+--2. Create Insert, Update, and Delete stored procedures for the artist table. Update procedure accepts input parameters for all columns. Insert accepts all columns as input parameters except for identity fields. Delete accepts a primary key value for delete.
+-----------------------------------------------------------------
+
+-- Drop and recreate sp_ins_artist
+DROP PROC IF EXISTS sp_ins_artist;
+GO
+
+CREATE PROC sp_ins_artist @artistFName varchar(255), @artistLName varchar(255), @artistTypeCode int
+AS -- Create stored Procedure which gets information from client and inserts new row into artist table.
+BEGIN TRY
+	INSERT artist(artistFName, artistLName, artistTypeCode)
+	VALUES(@artistFName, @artistLName, @artistTypeCode)
+END TRY
+BEGIN CATCH
+	PRINT 'Row was not inserted.';
+	PRINT 'Message: ' + CONVERT(VARCHAR(200), ERROR_MESSAGE());
+END CATCH
+GO
+
+-- GRANT EXECUTE permission to diskUserJM for created insert stored procedure
+GRANT EXECUTE ON sp_ins_artist to diskUserJM;
+GO
+
+-- EXECUTE Stored Procedure -- should work
+EXEC sp_ins_artist NULL, 'Metallica', 1;
+GO
+
+-- EXECUTE Stored Procedure -- should fail
+EXEC sp_ins_artist NULL, NULL, 1;
+GO
+
+-- Drop and recreate sp_upd_artist
+DROP PROC IF EXISTS sp_upd_artist;
+GO
+
+CREATE PROC sp_upd_artist @artistID int, @artistFName varchar(255), @artistLName varchar(255), @artistTypeCode int
+AS -- Create stored Procedure which gets information from client and updates a row in artist table.
+BEGIN TRY
+	UPDATE artist
+	SET artistFName = @artistFName,
+		@artistLName = @artistLName,
+		artistTypeCode = @artistTypeCode
+	WHERE artistID = @artistID
+END TRY
+BEGIN CATCH
+	PRINT 'Row was not inserted.';
+	PRINT 'Message: ' + CONVERT(VARCHAR(200), ERROR_MESSAGE());
+END CATCH
+GO
+
+-- GRANT EXECUTE permission to diskUserJM for created insert stored procedure
+GRANT EXECUTE ON sp_upd_artist to diskUserJM;
+GO
+
+-- EXECUTE Stored Procedure -- should work
+EXEC sp_upd_artist 21, NULL, 'Metallica', 2;
+GO
+
+-- EXECUTE Stored Procedure -- should fail
+EXEC sp_upd_artist 21, NULL, 'Metallica', NULL;
+GO
+
+-- Drop and recreate sp_del_artist
+DROP PROC IF EXISTS sp_del_artist;
+GO
+
+CREATE PROC sp_del_artist @artistID int
+AS -- Create stored Procedure which gets information from client and deletes a row in artist table.
+BEGIN TRY
+	DELETE FROM artist
+	WHERE artistID = @artistID;
+END TRY
+BEGIN CATCH
+	PRINT 'Row was not deleted.';
+	PRINT 'Message: ' + CONVERT(VARCHAR(200), ERROR_MESSAGE());
+END CATCH
+GO
+
+-- GRANT EXECUTE permission to diskUserJM for created insert stored procedure
+GRANT EXECUTE ON sp_del_artist to diskUserJM;
+GO
+
+-- EXECUTE Stored Procedure -- should work
+EXEC sp_del_artist 21;
+GO
+
+-- EXECUTE Stored Procedure -- should fail
+EXEC sp_del_artist 1;
+GO
+
+-----------------------------------------------------------------------
+--3. Create Insert, Update, and Delete stored procedures for the borrower table. Update procedure accepts input parameters for all columns. Insert accepts all columns as input parameters except for identity fields. Delete accepts a primary key value for delete.
+----------------------------------------------------------------------------
+
+--Drop and recreate sp_ins_borrower
+DROP PROC IF EXISTS sp_ins_borrower;
+GO
+
+CREATE PROC sp_ins_borrower @fname varchar(255), @mi varchar(10), @lname varchar(255), @phone varchar(20)
+AS -- Create stored Procedure which gets information from client and inserts a row into borrower table.
+BEGIN TRY
+	INSERT borrower(fname, mi, lname, phone)
+	VALUES (@fname, @mi, @lname, @phone)
+END TRY
+BEGIN CATCH
+	PRINT 'Row was not inserted.';
+	PRINT 'Message: ' + CONVERT(VARCHAR(200), ERROR_MESSAGE());
+END CATCH
+
+-- GRANT EXECUTE permission to diskUserJM for created insert stored procedure
+GRANT EXECUTE ON sp_ins_borrower to diskUserJM;
+GO
+
+-- EXECUTE Stored Procedure -- should work
+EXEC sp_ins_borrower 'John', NULL, 'Doe', '987-654-3210';
+GO
+
+-- EXECUTE Stored Procedure -- should fail
+EXEC sp_ins_borrower 'John', NULL, 'Doe', NULL;
+GO
+
+DROP PROC IF EXISTS sp_upd_borrower;
+GO
+
+--Drop and recreate sp_upd_borrower
+CREATE PROC sp_upd_borrower @borrowerID int, @fname varchar(255), @mi varchar(10), @lname varchar(255), @phone varchar(20)
+AS -- Create stored Procedure which gets information from client and updates a row in borrower table.
+BEGIN TRY
+	UPDATE borrower
+	SET fname = @fname,
+		mi = @mi,
+		lname = @lname,
+		phone = @phone
+	WHERE borrowerID = @borrowerID
+END TRY
+BEGIN CATCH
+	PRINT 'Row was not updated.';
+	PRINT 'Message: ' + CONVERT(VARCHAR(200), ERROR_MESSAGE());
+END CATCH
+GO
+
+-- GRANT EXECUTE permission to diskUserJM for created insert stored procedure
+GRANT EXECUTE ON sp_upd_borrower to diskUserJM;
+GO
+
+-- EXECUTE Stored Procedure -- should work
+EXEC sp_upd_borrower 22, 'John', 'P', 'Doe', '987-654-3210';
+GO
+
+-- EXECUTE Stored Procedure -- should fail
+EXEC sp_upd_borrower 22, NULL, 'P', 'Doe', NULL;
+GO
+
+--Drop and recreate sp_del_borrower stored procedure
+DROP PROC IF EXISTS sp_del_borrower;
+GO
+
+CREATE PROC sp_del_borrower @borrowerID int
+AS -- Create stored Procedure which gets information from client and deletes a row from borrower table.
+BEGIN TRY
+	DELETE FROM borrower
+	WHERE borrowerID = @borrowerID 
+END TRY
+BEGIN CATCH
+	PRINT 'Row was not deleted.';
+	PRINT 'Message: ' + CONVERT(VARCHAR(200), ERROR_MESSAGE());
+END CATCH
+GO
+
+-- GRANT EXECUTE permission to diskUserJM for created insert stored procedure
+GRANT EXECUTE ON sp_del_borrower to diskUserJM;
+GO
+
+-- EXECUTE Stored Procedure -- should work
+EXEC sp_del_borrower 22;
+GO
+
+-- EXECUTE Stored Procedure -- should fail
+EXEC sp_del_borrower 20;
+GO
+
+------------------------------------------------------------------------
+--4. Create Insert, Update, and Delete stored procedures for the disk table. Update procedure accepts input parameters for all columns. Insert accepts all columns as input parameters except for identity fields. Delete accepts a primary key value for delete.
+------------------------------------------------------------------------------
+
+--Drop and recreate sp_ins_disk stored procedure
+DROP PROC IF EXISTS sp_ins_disk;
+GO
+
+CREATE PROC sp_ins_disk 
+	@diskName varchar(255), @releaseDate date, @statusCode int, @genreCode int, @diskTypeID int
+AS  -- Create stored Procedure which gets information from client and inserts new row into disk table.
+BEGIN TRY
+	INSERT disk(diskName, releaseDate, statusCode, genreCode, diskTypeID)
+	VALUES (@diskName, @releaseDate, @statusCode, @genreCode, @diskTypeID)
+END TRY
+BEGIN CATCH
+	PRINT 'Row was not inserted.';
+	PRINT 'Message: ' + CONVERT(VARCHAR(200), ERROR_MESSAGE());
+END CATCH
+GO
+
+-- GRANT EXECUTE permission to diskUserJM for created insert stored procedure
+GRANT EXECUTE ON sp_ins_disk to diskUserJM;
+GO
+
+-- EXECUTE Stored Procedure -- should work
+EXEC sp_ins_disk 'Lightning Bolt', '2/2/2018', 1, 1, 1;
+GO
+
+-- EXECUTE Stored Procedure -- should fail
+EXEC sp_ins_disk NULL, '2/2/2018', 1, 1, 1;
+GO
+
+-- Drop and recreate sp_upd_disk stored procedure
+DROP PROC IF EXISTS sp_upd_disk;
+GO
+
+CREATE PROC sp_upd_disk @diskID int, @diskName varchar(255), @releaseDate date, @statusCode int, @genreCode int, @diskTypeID int
+AS -- Create stored Procedure which gets information from client and updates row in disk table.
+BEGIN TRY
+	UPDATE disk
+	SET diskName = @diskName,
+		releaseDate = @releaseDate,
+		statusCode = @statusCode,
+		genreCode = @genreCode,
+		diskTypeID = @diskTypeID
+	WHERE diskID = @diskID;
+END TRY
+BEGIN CATCH
+	PRINT 'Row was not updated.';
+	PRINT 'Message: ' + CONVERT(VARCHAR(200), ERROR_MESSAGE());
+END CATCH
+GO
+
+-- Grant EXECUTE permission of sp_upd_disk to diskUserJM
+GRANT EXECUTE ON sp_upd_disk to diskUserJM;
+GO
+
+-- EXECUTE Stored Procedure -- should work 
+EXEC sp_upd_disk 22, 'Lightning Bolt - Edited', '2/3/2018', 1, 1, 1;
+GO
+
+--EXECUTE Stored Procedure -- should fail
+EXEC sp_upd_disk 22, NULL, '2/3/2018', 1, 1, 1;
+GO
+
+-- Drop and recreate sp_del_disk stored procedure
+DROP PROC IF EXISTS sp_del_disk
+GO
+
+CREATE PROC sp_del_disk @diskID int
+AS -- Create stored Procedure which gets information from client and deletes a row in disk table.
+BEGIN TRY
+	DELETE FROM disk
+	WHERE diskID = @diskID;
+END TRY
+BEGIN CATCH
+	PRINT 'Row was not deleted.';
+	PRINT 'Message: ' + CONVERT(VARCHAR(200), ERROR_MESSAGE());
+END CATCH
+GO
+
+-- Grant EXECUTE permission of sp_del_disk to diskUserJM
+GRANT EXECUTE ON sp_del_disk to diskUserJM;
+GO
+
+--EXECUTE Stored Procedure -- should work
+EXEC sp_del_disk 22;
+GO
+
+--EXECUTE Stored Procedure -- should fail
+EXEC sp_del_disk 1;
+GO
